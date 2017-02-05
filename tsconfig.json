@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "example": ["src/example"],
+      "localization": ["src/texts/localization"],
+      "configuration": ["src/config"]
+    }
+  },
+  "awesomeTypescriptLoaderOptions": {
+  }
+}

@@ -1,0 +1,1 @@
+declare var _default: {"path":"string"}; export = _default;
