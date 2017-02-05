@@ -1,0 +1,55 @@
+@startuml
+skinparam monochrome true
+
+[-> Webpack : Build
+activate Webpack
+hnote over Webpack: Added virtual modules
+
+loop for each file x starting with the entry point
+	Webpack -> Cache: Lookup x
+	activate Cache
+	Cache -> Disk: Get content of x
+	activate Disk
+	Disk--> Cache: Content of x
+	deactivate Disk
+	Cache --> Webpack: Success
+	deactivate Cache
+	Webpack -> Webpack: Resolver for x
+	activate Webpack
+	Webpack --> Webpack: TypeScript
+	deactivate Webpack
+	Webpack -> TypeScript: Transpile x
+	activate TypeScript
+	TypeScript -> Disk: Get tsconfig.json
+	activate Disk
+	TypeScript -> Disk: Get content of x
+
+	loop for each module
+		TypeScript -> Disk: Try resolve module directly
+		Disk -> TypeScript: Not found
+		TypeScript -> Disk: Take path(s) from tsconfig
+		Disk -> TypeScript: Found declaration file
+	end
+
+	deactivate Disk
+	TypeScript --> Webpack: Warnings and errors
+	TypeScript --> Webpack: Transpiled code
+	destroy TypeScript
+
+	Webpack -> Cache: Update cache
+	Webpack -> Webpack: Resolve modules
+	activate Webpack
+	hnote over Webpack: Found file in cache
+	Webpack --> Webpack: Add missing modules
+	deactivate Webpack
+	[<-- Webpack: Print info on emitted file
+end
+
+Webpack -> Cache: Get all contents
+activate Cache
+Cache --> Webpack: Array of files
+deactivate Cache
+Webpack -> Disk: Write bundle
+[<- Webpack: Print summary
+deactivate Webpack
+@enduml
